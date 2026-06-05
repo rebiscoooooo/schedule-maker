@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sleek Glassmorphism Schedule with Smart OCR Import</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Cinzel:wght@600;700;800;900&family=Great+Vibes&family=Montserrat:wght@400;500&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+
+    <style>
+        body {
+            background-color: #eef2f6;
+            font-family: 'Poppins', sans-serif;
+            color: #333;
+        }
+
+        .app-container { max-width: 1300px; margin: 0 auto; padding: 40px 20px; }
+        
+        .control-panel {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.04);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .phone-wrapper { display: flex; justify-content: center; align-items: center; }
+
+        .phone-mockup {
+            width: 390px;
+            height: 844px;
+            background: #111;
+            border-radius: 50px;
+            padding: 12px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.2), inset 0 0 10px rgba(255,255,255,0.2);
+            position: relative;
+        }
+
+        .phone-notch {
+            position: absolute;
+            top: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 30px;
+            background: #000;
+            border-radius: 20px;
+            z-index: 10;
+        }
+
+        #wallpaper-area {
+            width: 100%;
+            height: 100%;
+            border-radius: 38px;
+            overflow: hidden;
+            position: relative;
+            background: linear-gradient(135deg, #0f172a 0%, #020617 100%);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- Elegant Typography Header (Fixed Position) --- */
+        .schedule-header {
+            padding-top: 135px; /* Fixed padding so it never moves */
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            z-index: 2;
+        }
+
+        .header-class {
+            font-family: 'Cinzel', serif;
+            font-size: 26px; 
+            font-weight: 900; 
+            letter-spacing: 12px;
+            color: #ffffff;
+            margin-left: 12px; 
+            margin-bottom: -32px; 
+            z-index: 2;
+            text-shadow: 0 4px 12px rgba(0,0,0,0.6); 
+        }
+
+        .header-schedule {
+            font-family: 'Great Vibes', cursive;
+            font-size: 82px; 
+            color: #ffffff;
+            opacity: 0.7; 
+            line-height: 1;
+            z-index: 3;
+            margin-bottom: -15px;
+            text-shadow: 0px 4px 15px rgba(0,0,0,0.4);
+        }
+
+        .header-semester {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 9px;
+            font-weight: 500;
+            letter-spacing: 4px;
+            color: #94a3b8;
+            margin-top: 5px;
+            text-transform: uppercase;
+        }
+
+        /* --- Main Content Body --- */
+        .content-body {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start; 
+            align-items: center;
+            padding: 0 15px 25px 15px; 
+            z-index: 1;
+            overflow: hidden; 
+        }
+
+        /* --- Cards Container (Only this scales) --- */
+        .cards-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 6px; 
+            width: 100%;
+            height: max-content; 
+            transform-origin: top center;
+            transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .day-card {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px; 
+            padding: 10px 14px; 
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            width: 100%; 
+            display: none; 
+            transition: all 0.3s ease;
+        }
+
+        .day-title {
+            font-size: 11px; 
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 3px;
+        }
+
+        .class-row {
+            display: grid;
+            grid-template-columns: 75px 1fr 65px; 
+            align-items: center;
+            padding: 4px 0; 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            gap: 6px;
+        }
+
+        .class-row:last-child { border-bottom: none; padding-bottom: 0; }
+
+        .class-time {
+            font-size: 9px; 
+            font-weight: 500;
+            color: #cbd5e1;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px 4px;
+            border-radius: 4px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.02);
+            white-space: nowrap;
+        }
+
+        .class-subject {
+            font-weight: 600;
+            font-size: 11px; 
+            color: #ffffff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .class-room {
+            font-weight: 400;
+            font-size: 9px; 
+            color: #94a3b8;
+            text-align: right;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .compact-mode { padding: 6px 10px; border-radius: 12px; }
+        .compact-mode .day-title { font-size: 10px; margin-bottom: 3px; padding-bottom: 2px; }
+        .compact-mode .class-row { padding: 2px 0; grid-template-columns: 70px 1fr 60px; }
+        .compact-mode .class-time { font-size: 8px; padding: 2px 3px; }
+        .compact-mode .class-subject { font-size: 10px; }
+        .compact-mode .class-room { font-size: 8px; }
+
+        #toast-alert { display: none; }
+        .cursor-pointer { cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="row align-items-center">
+        <div class="col-lg-6 mb-5">
+            <div class="control-panel">
+                <h3 class="fw-bold mb-2">Configure Schedule</h3>
+                <p class="text-muted small mb-4">Clean & Elegant Aesthetic. Auto-sorts & Auto-scales to fit!</p>
+                
+                <div class="alert alert-warning" id="toast-alert" role="alert">
+                    <strong>Limit Reached!</strong> A day cannot exceed 16 subjects.
+                </div>
+
+                <div class="mb-4 p-3 rounded-4" style="background: #f8f9fa; border: 1px dashed #ccc;">
+                    <label class="form-label text-dark fw-bold mb-1">⚡ Smart Import</label>
+                    <p class="text-muted mb-3" style="font-size: 11px;">Upload a PDF, Photo, or Paste Text directly.</p>
+                    
+                    <div class="d-flex gap-2 mb-3">
+                        <label class="btn btn-outline-dark btn-sm w-50 rounded-3 fw-bold cursor-pointer py-2 m-0">
+                            📄 Upload PDF
+                            <input type="file" id="pdfUpload" accept="application/pdf" style="display: none;" onchange="handlePDFUpload(event)">
+                        </label>
+                        <label class="btn btn-outline-dark btn-sm w-50 rounded-3 fw-bold cursor-pointer py-2 m-0">
+                            📸 Upload Image
+                            <input type="file" id="imgUpload" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+                        </label>
+                    </div>
+
+                    <div class="text-center text-muted mb-2" style="font-size: 10px; font-weight: 600; letter-spacing: 1px;">— OR PASTE TEXT —</div>
+
+                    <textarea id="form6Input" class="form-control bg-white border-1 mb-2 text-uppercase" rows="5" placeholder="MON:
+11:30 - 1:00 INTECH 3100 IT Lec 203
+TUE:
+10:00 - 12:00 STAT 3206 IT Lec 204"></textarea>
+                    <button type="button" onclick="parseForm6()" class="btn btn-dark w-100 btn-sm rounded-3 fw-bold">Import Extracted Data</button>
+                </div>
+
+                <hr class="my-4 text-muted">
+
+                <form id="scheduleForm">
+                    <h6 class="fw-bold text-dark mb-3">Or Add Manually:</h6>
+                    <div class="mb-3">
+                        <label class="form-label text-muted fw-bold" style="font-size: 12px;">Select Day</label>
+                        <select id="dayInput" class="form-select border-0 bg-light">
+                            <option value="MON">Monday</option>
+                            <option value="TUE">Tuesday</option>
+                            <option value="WED">Wednesday</option>
+                            <option value="THUR">Thursday</option>
+                            <option value="FRI">Friday</option>
+                            <option value="SAT">Saturday</option>
+                        </select>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-6">
+                            <label class="form-label text-muted fw-bold" style="font-size: 12px;">Time</label>
+                            <input type="text" id="timeInput" class="form-control border-0 bg-light" placeholder="11:30-1:00">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label text-muted fw-bold" style="font-size: 12px;">Room</label>
+                            <input type="text" id="roomInput" class="form-control border-0 bg-light" placeholder="IT LAB 1">
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label text-muted fw-bold" style="font-size: 12px;">Subject Code</label>
+                        <input type="text" id="subjectInput" class="form-control border-0 bg-light" placeholder="INTECH 3100">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 py-3 rounded-4 fw-bold mb-3" style="background-color: #0f172a; border: none;">+ Add Subject</button>
+                </form>
+
+                <div class="d-grid gap-2 mt-4">
+                    <button onclick="exportWallpaper()" class="btn btn-dark py-3 rounded-4 fw-bold">↓ Download HD Wallpaper</button>
+                    <button onclick="clearSchedule()" class="btn btn-outline-danger py-2 rounded-4 fw-bold">Reset All</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="phone-wrapper">
+                <div class="phone-mockup">
+                    <div class="phone-notch"></div>
+                    
+                    <div id="wallpaper-area">
+                        <div class="schedule-header">
+                            <div class="header-class">CLASS</div>
+                            <div class="header-schedule">Schedule</div>
+                            <div class="header-semester">1ST SEMESTER AY. 2026-2027</div>
+                        </div>
+
+                        <div class="content-body">
+                            <div class="cards-container">
+                                <div class="day-card" id="card-MON"><div class="day-title">MON</div><div id="list-MON"></div></div>
+                                <div class="day-card" id="card-TUE"><div class="day-title">TUE</div><div id="list-TUE"></div></div>
+                                <div class="day-card" id="card-WED"><div class="day-title">WED</div><div id="list-WED"></div></div>
+                                <div class="day-card" id="card-THUR"><div class="day-title">THUR</div><div id="list-THUR"></div></div>
+                                <div class="day-card" id="card-FRI"><div class="day-title">FRI</div><div id="list-FRI"></div></div>
+                                <div class="day-card" id="card-SAT"><div class="day-title">SAT</div><div id="list-SAT"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+
+    let scheduleData = { 'MON': [], 'TUE': [], 'WED': [], 'THUR': [], 'FRI': [], 'SAT': [] };
+
+    // --- Time Parsing for Auto-Sort ---
+    function parseTimeForSorting(timeStr) {
+        if (!timeStr || timeStr === 'TBA') return 9999;
+        
+        const startTime = timeStr.split('-')[0].trim();
+        const match = startTime.match(/(\d{1,2}):(\d{2})\s*(AM|PM|A|P)?/i);
+        
+        if (!match) return 9999; 
+
+        let hours = parseInt(match[1], 10);
+        let mins = parseInt(match[2], 10);
+        let ampm = match[3] ? match[3].toUpperCase() : null;
+
+        if (ampm && ampm.startsWith('P') && hours < 12) hours += 12;
+        if (ampm && ampm.startsWith('A') && hours === 12) hours = 0;
+        
+        if (!ampm && hours >= 1 && hours <= 6) {
+            hours += 12;
+        }
+
+        return (hours * 60) + mins;
+    }
+
+    // --- Dynamic Scaling (Header is untouched, ONLY cards scale down) ---
+    let adjustTimeout;
+    function triggerAutoAdjust() {
+        clearTimeout(adjustTimeout);
+        adjustTimeout = setTimeout(() => {
+            const contentBody = document.querySelector('.content-body');
+            const cardsContainer = document.querySelector('.cards-container');
+
+            // 1. Reset scale to measure natural height
+            cardsContainer.style.transform = 'scale(1)';
+
+            // 2. Measure available space within the content body 
+            let availableHeight = contentBody.clientHeight;
+            // Measure how much space the cards actually need (plus a small buffer)
+            let contentHeight = cardsContainer.scrollHeight + 15; 
+
+            // 3. If cards are taller than the space, scale them down
+            if (contentHeight > availableHeight) {
+                let scaleRatio = availableHeight / contentHeight;
+                cardsContainer.style.transform = `scale(${scaleRatio})`;
+            }
+        }, 50); // Small delay to allow DOM render before measuring
+    }
+
+    // --- Core UI Renderer ---
+    function renderDay(day) {
+        const card = document.getElementById(`card-${day}`);
+        const listContainer = document.getElementById(`list-${day}`);
+        listContainer.innerHTML = ''; 
+
+        if (scheduleData[day].length === 0) {
+            card.style.display = 'none';
+            triggerAutoAdjust();
+            return;
+        }
+
+        card.style.display = 'block';
+
+        scheduleData[day].sort((a, b) => a.sortValue - b.sortValue);
+
+        scheduleData[day].forEach(classItem => {
+            const classRowHTML = `
+                <div class="class-row">
+                    <div class="class-time">${classItem.time}</div>
+                    <div class="class-subject">${classItem.subject}</div>
+                    <div class="class-room">${classItem.room}</div>
+                </div>
+            `;
+            listContainer.insertAdjacentHTML('beforeend', classRowHTML);
+        });
+
+        if(scheduleData[day].length > 5) {
+            card.classList.add('compact-mode');
+        } else {
+            card.classList.remove('compact-mode');
+        }
+        
+        triggerAutoAdjust();
+    }
+
+    function addClassToData(day, time, subject, room) {
+        if (scheduleData[day].length >= 16) {
+            document.getElementById('toast-alert').style.display = 'block';
+            setTimeout(() => { document.getElementById('toast-alert').style.display = 'none'; }, 3000);
+            return false; 
+        }
+
+        scheduleData[day].push({
+            time: time,
+            subject: subject,
+            room: room,
+            sortValue: parseTimeForSorting(time)
+        });
+
+        renderDay(day);
+        return true;
+    }
+
+    async function handleImageUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const btnLabel = event.target.parentElement;
+        const originalText = btnLabel.innerHTML;
+        btnLabel.innerHTML = '⏳ Scanning...';
+
+        try {
+            const worker = await Tesseract.createWorker('eng');
+            const ret = await worker.recognize(file);
+            await worker.terminate();
+            
+            document.getElementById('form6Input').value = ret.data.text;
+            parseForm6();
+        } catch (error) {
+            console.error("Image Parsing Error: ", error);
+            alert("Couldn't read text from this image.");
+        } finally {
+            btnLabel.innerHTML = originalText;
+            event.target.value = ''; 
+        }
+    }
+
+    async function handlePDFUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const btnLabel = event.target.parentElement;
+        const originalText = btnLabel.innerHTML;
+        btnLabel.innerHTML = '⏳ Extracting...';
+
+        const reader = new FileReader();
+        reader.onload = async function() {
+            try {
+                const typedarray = new Uint8Array(this.result);
+                const pdf = await pdfjsLib.getDocument({ data: typedarray }).promise;
+                let fullText = "";
+
+                for (let i = 1; i <= pdf.numPages; i++) {
+                    const page = await pdf.getPage(i);
+                    const content = await page.getTextContent();
+                    
+                    let lastY = -1;
+                    let line = "";
+
+                    content.items.forEach(item => {
+                        if (lastY !== -1 && Math.abs(lastY - item.transform[5]) > 4) {
+                            fullText += line + '\n';
+                            line = "";
+                        }
+                        line += item.str + ' ';
+                        lastY = item.transform[5];
+                    });
+                    fullText += line + '\n';
+                }
+
+                document.getElementById('form6Input').value = fullText;
+                parseForm6();
+                
+            } catch (error) {
+                console.error("PDF Parsing Error: ", error);
+                alert("Couldn't read text from this PDF.");
+            } finally {
+                btnLabel.innerHTML = originalText;
+                event.target.value = '';
+            }
+        };
+        reader.readAsArrayBuffer(file);
+    }
+
+    function getDaysFromString(str) {
+        let d = new Set();
+        let s = str.toUpperCase();
+        if (s.includes('MONDAY') || s.includes('MON') || s.includes('MWF') || s.includes('M_') || s.match(/\bM\b/)) d.add('MON');
+        if (s.includes('TUESDAY') || s.includes('TUE') || s.includes('TTH') || s.includes('T_F') || s.includes('T_TH') || s.match(/\bT_\b/) || (s.match(/\bT\b/) && !s.match(/\bTH\b/))) d.add('TUE');
+        if (s.includes('WEDNESDAY') || s.includes('WED') || s.includes('MWF') || s.includes('W_') || s.match(/\bW\b/)) d.add('WED');
+        if (s.includes('THURSDAY') || s.includes('THUR') || s.includes('THU') || s.includes('TTH') || s.includes('TH_') || s.match(/\bTH\b/)) d.add('THUR');
+        if (s.includes('FRIDAY') || s.includes('FRI') || s.includes('MWF') || s.includes('F_') || s.match(/\bF\b/)) d.add('FRI');
+        if (s.includes('SATURDAY') || s.includes('SAT') || s.includes('S_') || s.match(/\bS\b/)) d.add('SAT');
+        return Array.from(d);
+    }
+
+    function parseForm6() {
+        const text = document.getElementById('form6Input').value;
+        const lines = text.split('\n');
+
+        let currentContextDays = []; 
+
+        lines.forEach(line => {
+            if(!line.trim()) return;
+            let cleanLine = line.replace(/\s{2,}/g, ' ').trim();
+
+            const dayHeaderRegex = /^(MONDAY|TUESDAY|WEDNESDAY|THURSDAY|FRIDAY|SATURDAY|MON|TUE|WED|THU|THUR|FRI|SAT)S?:?$/i;
+            if (cleanLine.match(dayHeaderRegex)) {
+                currentContextDays = getDaysFromString(cleanLine);
+                return; 
+            }
+
+            const timeRegex = /(\d{1,2}:\d{2}\s*(?:AM|PM|A|P)?\s*-\s*\d{1,2}:\d{2}\s*(?:AM|PM|A|P)?)/i;
+            const timeMatch = cleanLine.match(timeRegex);
+            
+            let time = "TBA";
+            let remainingLine = cleanLine;
+
+            if (timeMatch) {
+                time = timeMatch[0].replace(/\s/g, '');
+                remainingLine = cleanLine.replace(timeMatch[0], '').trim();
+            } else if (cleanLine.toUpperCase().includes('TBA')) {
+                time = "TBA";
+                remainingLine = cleanLine.replace(/\bTBA\b/i, '').trim();
+            } else {
+                return; 
+            }
+
+            let inlineDays = getDaysFromString(remainingLine);
+            let activeDays = inlineDays.length > 0 ? inlineDays : currentContextDays;
+
+            if (activeDays.length === 0) return; 
+
+            remainingLine = remainingLine
+                .replace(/\b(M_W_|T_TH_|T_F_|M_|T_|W_|TH_|F_|S_|MWF|TTH|M|T|W|TH|F|S)\b/ig, '')
+                .replace(/_/g, '')
+                .replace(/^\d+\s+/, '') 
+                .replace(/\s+\d+$/, '') 
+                .trim();
+
+            const subjRoomRegex = /^([A-Z-]+\s*\d+(?:\s+LAB\s*[A-Z]?)?)\s*(.*)$/i;
+            let match = remainingLine.match(subjRoomRegex);
+            
+            let subject = "SUBJECT";
+            let room = "TBA";
+
+            if (match) {
+                subject = match[1].trim();
+                room = match[2].trim() || "TBA";
+            } else {
+                let parts = remainingLine.split(' ');
+                if (parts.length > 1) {
+                    room = parts.pop();
+                    subject = parts.join(' ');
+                } else {
+                    subject = remainingLine || "SUBJECT";
+                }
+            }
+
+            activeDays.forEach(day => {
+                addClassToData(day, time, subject, room);
+            });
+        });
+    }
+
+    document.getElementById('scheduleForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const day = document.getElementById('dayInput').value;
+        const time = document.getElementById('timeInput').value || 'TBA';
+        const subject = document.getElementById('subjectInput').value || 'SUBJECT';
+        const room = document.getElementById('roomInput').value || 'TBA';
+
+        if(addClassToData(day, time, subject, room)) {
+            document.getElementById('timeInput').value = '';
+            document.getElementById('subjectInput').value = '';
+            document.getElementById('roomInput').value = '';
+        }
+    });
+
+    function clearSchedule() {
+        const days = ['MON', 'TUE', 'WED', 'THUR', 'FRI', 'SAT'];
+        days.forEach(day => {
+            scheduleData[day] = []; 
+            renderDay(day);         
+        });
+        document.getElementById('form6Input').value = '';
+        triggerAutoAdjust();
+    }
+
+    function exportWallpaper() {
+        const captureArea = document.getElementById('wallpaper-area');
+        
+        captureArea.style.borderRadius = '0';
+
+        html2canvas(captureArea, {
+            scale: 3, 
+            useCORS: true,
+            backgroundColor: null
+        }).then(canvas => {
+            captureArea.style.borderRadius = ''; 
+
+            const link = document.createElement('a');
+            link.download = 'Elegant_Aesthetic_Schedule.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        });
+    }
+
+    // Initialize layout check on load
+    window.addEventListener('load', triggerAutoAdjust);
+</script>
+
+</body>
+</html>
