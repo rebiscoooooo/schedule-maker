@@ -6,7 +6,7 @@
     <title>Sleek Glassmorphism Schedule with Smart OCR Import</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Cinzel:wght@600;700;800;900&family=Great+Vibes&family=Montserrat:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Cinzel:wght@600;700;800;900&family=Great+Vibes&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
@@ -32,23 +32,25 @@
 
         .phone-wrapper { display: flex; justify-content: center; align-items: center; }
 
+        /* Set to exact 20:9 Ratio (360x804). 
+           When exported with html2canvas scale: 3, it becomes exactly 1080x2412 */
         .phone-mockup {
-            width: 390px;
-            height: 844px;
+            width: 360px;
+            height: 804px;
             background: #111;
-            border-radius: 50px;
-            padding: 12px;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.2), inset 0 0 10px rgba(255,255,255,0.2);
+            border-radius: 40px;
+            padding: 10px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.2), inset 0 0 10px rgba(255,255,255,0.1);
             position: relative;
         }
 
         .phone-notch {
             position: absolute;
-            top: 25px;
+            top: 20px;
             left: 50%;
             transform: translateX(-50%);
-            width: 120px;
-            height: 30px;
+            width: 100px;
+            height: 25px;
             background: #000;
             border-radius: 20px;
             z-index: 10;
@@ -57,55 +59,79 @@
         #wallpaper-area {
             width: 100%;
             height: 100%;
-            border-radius: 38px;
+            border-radius: 30px;
             overflow: hidden;
             position: relative;
-            background: linear-gradient(135deg, #0f172a 0%, #020617 100%);
+            background: #020617; /* Deep dark base */
             display: flex;
             flex-direction: column;
+            z-index: 1;
         }
 
-        /* --- Elegant Typography Header (Fixed Position) --- */
+        /* Added glowing orbs to make the glassmorphism pop */
+        #wallpaper-area::before {
+            content: '';
+            position: absolute;
+            top: -10%; left: -20%;
+            width: 300px; height: 300px;
+            background: rgba(56, 189, 248, 0.35); /* Bright blue glow */
+            filter: blur(80px);
+            z-index: -1;
+            border-radius: 50%;
+        }
+
+        #wallpaper-area::after {
+            content: '';
+            position: absolute;
+            bottom: -5%; right: -15%;
+            width: 250px; height: 250px;
+            background: rgba(139, 92, 246, 0.3); /* Purple glow */
+            filter: blur(80px);
+            z-index: -1;
+            border-radius: 50%;
+        }
+
+        /* --- Elegant Typography Header --- */
         .schedule-header {
-            padding-top: 135px; /* Fixed padding so it never moves */
+            padding-top: 210px; /* Pushed down significantly for the lock screen clock */
             flex-shrink: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            margin-bottom: 15px;
+            margin-bottom: 25px;
             z-index: 2;
         }
 
         .header-class {
             font-family: 'Cinzel', serif;
-            font-size: 26px; 
+            font-size: 24px; 
             font-weight: 900; 
             letter-spacing: 12px;
             color: #ffffff;
             margin-left: 12px; 
-            margin-bottom: -32px; 
+            margin-bottom: -30px; 
             z-index: 2;
             text-shadow: 0 4px 12px rgba(0,0,0,0.6); 
         }
 
         .header-schedule {
             font-family: 'Great Vibes', cursive;
-            font-size: 82px; 
+            font-size: 78px; 
             color: #ffffff;
-            opacity: 0.7; 
+            opacity: 0.85; 
             line-height: 1;
             z-index: 3;
-            margin-bottom: -15px;
+            margin-bottom: -10px;
             text-shadow: 0px 4px 15px rgba(0,0,0,0.4);
         }
 
         .header-semester {
             font-family: 'Montserrat', sans-serif;
-            font-size: 9px;
-            font-weight: 500;
-            letter-spacing: 4px;
-            color: #94a3b8;
+            font-size: 8px;
+            font-weight: 600;
+            letter-spacing: 5px;
+            color: #cbd5e1;
             margin-top: 5px;
             text-transform: uppercase;
         }
@@ -117,32 +143,35 @@
             flex-direction: column;
             justify-content: flex-start; 
             align-items: center;
-            padding: 0 15px 25px 15px; 
+            padding: 0 18px 30px 18px; 
             z-index: 1;
             overflow: hidden; 
         }
 
-        /* --- Cards Container (Only this scales) --- */
+        /* --- Cards Container --- */
         .cards-container {
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
             align-items: center;
-            gap: 6px; 
+            gap: 10px; 
             width: 100%;
             height: max-content; 
             transform-origin: top center;
             transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
 
+        /* Refined Glassmorphism */
         .day-card {
-            background: rgba(255, 255, 255, 0.04);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 16px; 
-            padding: 10px 14px; 
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            border-top: 1px solid rgba(255, 255, 255, 0.15); /* Light catch effect */
+            border-left: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 18px; 
+            padding: 12px 16px; 
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
             width: 100%; 
             display: none; 
             transition: all 0.3s ease;
@@ -150,49 +179,52 @@
 
         .day-title {
             font-size: 11px; 
-            font-weight: 600;
-            margin-bottom: 4px;
+            font-weight: 700;
+            margin-bottom: 6px;
             color: #94a3b8;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            padding-bottom: 3px;
+            letter-spacing: 3px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            padding-bottom: 4px;
         }
 
         .class-row {
             display: grid;
-            grid-template-columns: 75px 1fr 65px; 
+            grid-template-columns: 80px 1fr 65px; 
             align-items: center;
-            padding: 4px 0; 
-            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-            gap: 6px;
+            padding: 5px 0; 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            gap: 8px;
         }
 
         .class-row:last-child { border-bottom: none; padding-bottom: 0; }
 
         .class-time {
             font-size: 9px; 
-            font-weight: 500;
-            color: #cbd5e1;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 2px 4px;
-            border-radius: 4px;
+            font-weight: 600;
+            color: #e2e8f0;
+            background: rgba(255, 255, 255, 0.08);
+            padding: 3px 6px;
+            border-radius: 6px;
             text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             white-space: nowrap;
+            letter-spacing: 0.5px;
         }
 
         .class-subject {
             font-weight: 600;
             font-size: 11px; 
-            color: #ffffff;
+            color: #f8fafc;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            letter-spacing: 0.5px;
         }
 
         .class-room {
-            font-weight: 400;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 500;
             font-size: 9px; 
             color: #94a3b8;
             text-align: right;
@@ -201,10 +233,11 @@
             text-overflow: ellipsis;
         }
 
-        .compact-mode { padding: 6px 10px; border-radius: 12px; }
-        .compact-mode .day-title { font-size: 10px; margin-bottom: 3px; padding-bottom: 2px; }
-        .compact-mode .class-row { padding: 2px 0; grid-template-columns: 70px 1fr 60px; }
-        .compact-mode .class-time { font-size: 8px; padding: 2px 3px; }
+        /* Compact mode refinements */
+        .compact-mode { padding: 8px 12px; border-radius: 14px; gap: 6px; }
+        .compact-mode .day-title { font-size: 10px; margin-bottom: 4px; padding-bottom: 3px; }
+        .compact-mode .class-row { padding: 3px 0; grid-template-columns: 75px 1fr 60px; }
+        .compact-mode .class-time { font-size: 8px; padding: 2px 4px; }
         .compact-mode .class-subject { font-size: 10px; }
         .compact-mode .class-room { font-size: 8px; }
 
@@ -285,7 +318,7 @@ TUE:
                 </form>
 
                 <div class="d-grid gap-2 mt-4">
-                    <button onclick="exportWallpaper()" class="btn btn-dark py-3 rounded-4 fw-bold">↓ Download HD Wallpaper</button>
+                    <button onclick="exportWallpaper()" class="btn btn-dark py-3 rounded-4 fw-bold">↓ Download HD Wallpaper (1080x2412)</button>
                     <button onclick="clearSchedule()" class="btn btn-outline-danger py-2 rounded-4 fw-bold">Reset All</button>
                 </div>
             </div>
@@ -348,7 +381,7 @@ TUE:
         return (hours * 60) + mins;
     }
 
-    // --- Dynamic Scaling (Header is untouched, ONLY cards scale down) ---
+    // --- Dynamic Scaling ---
     let adjustTimeout;
     function triggerAutoAdjust() {
         clearTimeout(adjustTimeout);
@@ -356,20 +389,16 @@ TUE:
             const contentBody = document.querySelector('.content-body');
             const cardsContainer = document.querySelector('.cards-container');
 
-            // 1. Reset scale to measure natural height
             cardsContainer.style.transform = 'scale(1)';
 
-            // 2. Measure available space within the content body 
             let availableHeight = contentBody.clientHeight;
-            // Measure how much space the cards actually need (plus a small buffer)
             let contentHeight = cardsContainer.scrollHeight + 15; 
 
-            // 3. If cards are taller than the space, scale them down
-            if (contentHeight > availableHeight) {
+            if (contentHeight > availableHeight && availableHeight > 0) {
                 let scaleRatio = availableHeight / contentHeight;
                 cardsContainer.style.transform = `scale(${scaleRatio})`;
             }
-        }, 50); // Small delay to allow DOM render before measuring
+        }, 50); 
     }
 
     // --- Core UI Renderer ---
@@ -605,17 +634,19 @@ TUE:
     function exportWallpaper() {
         const captureArea = document.getElementById('wallpaper-area');
         
+        // Remove border radius temporarily for a clean edge
         captureArea.style.borderRadius = '0';
 
+        // Scale by exactly 3 relative to 360x804 viewport = 1080x2412 Output
         html2canvas(captureArea, {
             scale: 3, 
             useCORS: true,
-            backgroundColor: null
+            backgroundColor: '#020617' 
         }).then(canvas => {
-            captureArea.style.borderRadius = ''; 
+            captureArea.style.borderRadius = '30px'; 
 
             const link = document.createElement('a');
-            link.download = 'Elegant_Aesthetic_Schedule.png';
+            link.download = 'Aesthetic_Schedule_1080x2412.png';
             link.href = canvas.toDataURL('image/png');
             link.click();
         });
