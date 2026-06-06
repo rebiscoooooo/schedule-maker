@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sleek Glassmorphism Schedule with Smart OCR Import</title>
+    <title>Sleek AMOLED Schedule with Smart OCR Import</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Cinzel:wght@600;700;800;900&family=Great+Vibes&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
@@ -32,7 +32,7 @@
 
         .phone-wrapper { display: flex; justify-content: center; align-items: center; }
 
-        /* Exact 20:9 Ratio (360x804) -> 1080x2412 Output */
+        /* Exact Base Scale: 360x804 * 3 = 1080x2412 Output */
         .phone-mockup {
             width: 360px;
             height: 804px;
@@ -67,16 +67,24 @@
             z-index: 1;
         }
 
-        #wallpaper-area::before {
-            content: ''; position: absolute; top: -10%; left: -20%;
-            width: 300px; height: 300px; background: rgba(56, 189, 248, 0.35);
-            filter: blur(80px); z-index: -1; border-radius: 50%;
+        /* Bubbles/Orbs - converted to classes so we can hide them on download */
+        .glow-orb {
+            position: absolute;
+            filter: blur(80px);
+            z-index: -1;
+            border-radius: 50%;
+        }
+        
+        .orb-1 {
+            top: -10%; left: -20%;
+            width: 300px; height: 300px; 
+            background: rgba(56, 189, 248, 0.35);
         }
 
-        #wallpaper-area::after {
-            content: ''; position: absolute; bottom: -5%; right: -15%;
-            width: 250px; height: 250px; background: rgba(139, 92, 246, 0.3);
-            filter: blur(80px); z-index: -1; border-radius: 50%;
+        .orb-2 {
+            bottom: -5%; right: -15%;
+            width: 250px; height: 250px; 
+            background: rgba(139, 92, 246, 0.3);
         }
 
         /* --- Typography Header --- */
@@ -134,7 +142,6 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.06); padding-bottom: 4px;
         }
 
-        /* Adjusted Grid and Wrap Behavior so nothing gets cut off */
         .class-row {
             display: grid;
             grid-template-columns: minmax(70px, auto) 1fr minmax(60px, auto); 
@@ -160,7 +167,7 @@
 
         .class-subject {
             font-weight: 600; font-size: 10px; color: #f8fafc;
-            white-space: normal; /* Allows text to wrap */
+            white-space: normal; 
             word-break: break-word;
             line-height: 1.3;
             letter-spacing: 0.5px;
@@ -169,7 +176,7 @@
         .class-room {
             font-family: 'Montserrat', sans-serif; font-weight: 500;
             font-size: 9px; color: #94a3b8; text-align: right;
-            white-space: normal; /* Allows text to wrap */
+            white-space: normal; 
             word-break: break-word;
             line-height: 1.3;
         }
@@ -261,7 +268,7 @@ TUE:
                 </form>
 
                 <div class="d-grid gap-2 mt-4">
-                    <button onclick="exportWallpaper()" class="btn btn-dark py-3 rounded-4 fw-bold">↓ Download HD Wallpaper (1080x2412)</button>
+                    <button onclick="exportWallpaper()" class="btn btn-dark py-3 rounded-4 fw-bold">↓ Download AMOLED HD (1080x2412)</button>
                     <button onclick="clearSchedule()" class="btn btn-outline-danger py-2 rounded-4 fw-bold">Reset All</button>
                 </div>
             </div>
@@ -273,6 +280,9 @@ TUE:
                     <div class="phone-notch"></div>
                     
                     <div id="wallpaper-area">
+                        <div class="glow-orb orb-1"></div>
+                        <div class="glow-orb orb-2"></div>
+
                         <div class="schedule-header">
                             <div class="header-class">CLASS</div>
                             <div class="header-schedule">Schedule</div>
@@ -301,47 +311,33 @@ TUE:
 
     let scheduleData = { 'MON': [], 'TUE': [], 'WED': [], 'THUR': [], 'FRI': [], 'SAT': [] };
 
-    // --- Generate Unique ID for Editing ---
     function generateId() {
         return Date.now().toString(36) + Math.random().toString(36).substr(2);
     }
 
-    // --- Time Parsing for Auto-Sort ---
     function parseTimeForSorting(timeStr) {
         if (!timeStr || timeStr === 'TBA') return 9999;
-        
         const startTime = timeStr.split('-')[0].trim();
         const match = startTime.match(/(\d{1,2}):(\d{2})\s*(AM|PM|A|P)?/i);
-        
         if (!match) return 9999; 
-
         let hours = parseInt(match[1], 10);
         let mins = parseInt(match[2], 10);
         let ampm = match[3] ? match[3].toUpperCase() : null;
-
         if (ampm && ampm.startsWith('P') && hours < 12) hours += 12;
         if (ampm && ampm.startsWith('A') && hours === 12) hours = 0;
-        
-        if (!ampm && hours >= 1 && hours <= 6) {
-            hours += 12;
-        }
-
+        if (!ampm && hours >= 1 && hours <= 6) { hours += 12; }
         return (hours * 60) + mins;
     }
 
-    // --- Dynamic Scaling ---
     let adjustTimeout;
     function triggerAutoAdjust() {
         clearTimeout(adjustTimeout);
         adjustTimeout = setTimeout(() => {
             const contentBody = document.querySelector('.content-body');
             const cardsContainer = document.querySelector('.cards-container');
-
             cardsContainer.style.transform = 'scale(1)';
-
             let availableHeight = contentBody.clientHeight;
             let contentHeight = cardsContainer.scrollHeight + 15; 
-
             if (contentHeight > availableHeight && availableHeight > 0) {
                 let scaleRatio = availableHeight / contentHeight;
                 cardsContainer.style.transform = `scale(${scaleRatio})`;
@@ -349,29 +345,23 @@ TUE:
         }, 50); 
     }
 
-    // --- Edit Mode Function ---
     window.editClass = function(day, id) {
         const itemIndex = scheduleData[day].findIndex(item => item.id === id);
         if (itemIndex > -1) {
             const item = scheduleData[day][itemIndex];
-            
-            // Populate form
             document.getElementById('dayInput').value = day;
             document.getElementById('timeInput').value = item.time;
             document.getElementById('subjectInput').value = item.subject;
             document.getElementById('roomInput').value = item.room;
             
-            // Change UI to show Edit Mode
             document.getElementById('formHeader').innerHTML = '<span class="text-primary">Editing Subject (Save to Confirm)</span>';
             document.getElementById('submitBtn').innerText = '✓ Save Changes';
 
-            // Remove item from array (it will be added back when saved)
             scheduleData[day].splice(itemIndex, 1);
             renderDay(day);
         }
     };
 
-    // --- Core UI Renderer ---
     function renderDay(day) {
         const card = document.getElementById(`card-${day}`);
         const listContainer = document.getElementById(`list-${day}`);
@@ -382,13 +372,10 @@ TUE:
             triggerAutoAdjust();
             return;
         }
-
         card.style.display = 'block';
-
         scheduleData[day].sort((a, b) => a.sortValue - b.sortValue);
 
         scheduleData[day].forEach(classItem => {
-            // Added onclick for editing
             const classRowHTML = `
                 <div class="class-row" onclick="editClass('${day}', '${classItem.id}')" title="Click to Edit/Remove">
                     <div class="class-time">${classItem.time}</div>
@@ -404,7 +391,6 @@ TUE:
         } else {
             card.classList.remove('compact-mode');
         }
-        
         triggerAutoAdjust();
     }
 
@@ -414,22 +400,14 @@ TUE:
             setTimeout(() => { document.getElementById('toast-alert').style.display = 'none'; }, 3000);
             return false; 
         }
-
         scheduleData[day].push({
-            id: generateId(),
-            time: time,
-            subject: subject,
-            room: room,
+            id: generateId(), time: time, subject: subject, room: room,
             sortValue: parseTimeForSorting(time)
         });
-
         renderDay(day);
         return true;
     }
 
-    // --- Rest of Parsing Code ---
-    // (Omitted unchanged parsing code logic for brevity, keeping all the same functionality)
-    
     async function handleImageUpload(event) {
         const file = event.target.files[0];
         if (!file) return;
@@ -466,12 +444,10 @@ TUE:
                 for (let i = 1; i <= pdf.numPages; i++) {
                     const page = await pdf.getPage(i);
                     const content = await page.getTextContent();
-                    let lastY = -1;
-                    let line = "";
+                    let lastY = -1; let line = "";
                     content.items.forEach(item => {
                         if (lastY !== -1 && Math.abs(lastY - item.transform[5]) > 4) {
-                            fullText += line + '\n';
-                            line = "";
+                            fullText += line + '\n'; line = "";
                         }
                         line += item.str + ' ';
                         lastY = item.transform[5];
@@ -517,8 +493,7 @@ TUE:
             }
             const timeRegex = /(\d{1,2}:\d{2}\s*(?:AM|PM|A|P)?\s*-\s*\d{1,2}:\d{2}\s*(?:AM|PM|A|P)?)/i;
             const timeMatch = cleanLine.match(timeRegex);
-            let time = "TBA";
-            let remainingLine = cleanLine;
+            let time = "TBA"; let remainingLine = cleanLine;
             if (timeMatch) {
                 time = timeMatch[0].replace(/\s/g, '');
                 remainingLine = cleanLine.replace(timeMatch[0], '').trim();
@@ -540,16 +515,12 @@ TUE:
             let match = remainingLine.match(subjRoomRegex);
             let subject = "SUBJECT", room = "TBA";
             if (match) {
-                subject = match[1].trim();
-                room = match[2].trim() || "TBA";
+                subject = match[1].trim(); room = match[2].trim() || "TBA";
             } else {
                 let parts = remainingLine.split(' ');
                 if (parts.length > 1) {
-                    room = parts.pop();
-                    subject = parts.join(' ');
-                } else {
-                    subject = remainingLine || "SUBJECT";
-                }
+                    room = parts.pop(); subject = parts.join(' ');
+                } else { subject = remainingLine || "SUBJECT"; }
             }
             activeDays.forEach(day => addClassToData(day, time, subject, room));
         });
@@ -566,8 +537,6 @@ TUE:
             document.getElementById('timeInput').value = '';
             document.getElementById('subjectInput').value = '';
             document.getElementById('roomInput').value = '';
-            
-            // Reset Edit Mode UI if it was active
             document.getElementById('formHeader').innerText = 'Add Manually:';
             document.getElementById('submitBtn').innerHTML = '+ Add Subject';
         }
@@ -575,32 +544,37 @@ TUE:
 
     function clearSchedule() {
         const days = ['MON', 'TUE', 'WED', 'THUR', 'FRI', 'SAT'];
-        days.forEach(day => {
-            scheduleData[day] = []; 
-            renderDay(day);         
-        });
+        days.forEach(day => { scheduleData[day] = []; renderDay(day); });
         document.getElementById('form6Input').value = '';
         triggerAutoAdjust();
     }
 
     function exportWallpaper() {
-        // Temporarily clear UI hover states to avoid them showing in screenshot
+        // HIDE BUBBLES/ORBS DURING EXPORT
+        const orbs = document.querySelectorAll('.glow-orb');
+        orbs.forEach(orb => orb.style.display = 'none');
+
+        // REMOVE HOVER STATES TEMPORARILY
         const rows = document.querySelectorAll('.class-row');
         rows.forEach(r => r.style.pointerEvents = 'none');
 
         const captureArea = document.getElementById('wallpaper-area');
-        captureArea.style.borderRadius = '0';
+        captureArea.style.borderRadius = '0'; // Clean square edges for wallpaper
 
+        // PURE AMOLED BLACK BACKGROUND EXPORT
         html2canvas(captureArea, {
             scale: 3, 
             useCORS: true,
-            backgroundColor: '#020617' 
+            backgroundColor: '#000000' // True Black for AMOLED
         }).then(canvas => {
+            // RESTORE UI AFTER EXPORT
             captureArea.style.borderRadius = '30px'; 
-            rows.forEach(r => r.style.pointerEvents = 'auto'); // Return interactions
+            rows.forEach(r => r.style.pointerEvents = 'auto');
+            orbs.forEach(orb => orb.style.display = 'block'); // Bring bubbles back in live view
 
+            // DOWNLOAD
             const link = document.createElement('a');
-            link.download = 'Aesthetic_Schedule_1080x2412.png';
+            link.download = 'Aesthetic_AMOLED_Schedule_1080x2412.png';
             link.href = canvas.toDataURL('image/png');
             link.click();
         });
