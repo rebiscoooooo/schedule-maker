@@ -1,0 +1,650 @@
+/* ==========================================================================
+   PHONE MOCKUP & WALLPAPER COMPONENT STYLES
+   Lock Screen Schedule Maker (Base: 360x804 -> 3x Scale = 1080x2412 HD)
+   ========================================================================== */
+
+:root {
+    --card-opacity: 0.72;
+    --card-blur: 24px;
+    --card-border-color: rgba(255, 255, 255, 0.12);
+    --card-box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.phone-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    padding: 10px 0;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: top center;
+}
+
+/* Responsive Zoom Scale Modifiers for Phone Wrapper */
+.phone-wrapper.scale-75 {
+    transform: scale(0.75);
+    margin-bottom: -190px;
+}
+
+.phone-wrapper.scale-85 {
+    transform: scale(0.85);
+    margin-bottom: -115px;
+}
+
+.phone-wrapper.scale-100 {
+    transform: scale(1);
+    margin-bottom: 0;
+}
+
+/* Realistic Smartphone Bezel */
+.phone-mockup {
+    width: 380px;
+    height: 824px;
+    background: #090d16;
+    border-radius: 46px;
+    padding: 10px;
+    box-sizing: border-box;
+    box-shadow:
+        0 0 0 2px #1e293b,
+        0 0 0 5px #0f172a,
+        0 30px 70px -15px rgba(0, 0, 0, 0.8),
+        0 0 50px rgba(56, 189, 248, 0.12);
+    position: relative;
+    transition: box-shadow 0.3s ease;
+    user-select: none;
+    flex-shrink: 0;
+}
+
+.phone-mockup:hover {
+    box-shadow:
+        0 0 0 2px #38bdf8,
+        0 0 0 5px #0f172a,
+        0 35px 80px -15px rgba(0, 0, 0, 0.9),
+        0 0 60px rgba(56, 189, 248, 0.25);
+}
+
+/* Dynamic Island / Hardware Notch */
+.phone-notch {
+    position: absolute;
+    top: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 110px;
+    height: 28px;
+    background: #000000;
+    border-radius: 20px;
+    z-index: 25;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    pointer-events: none;
+}
+
+.notch-camera {
+    width: 10px;
+    height: 10px;
+    background: #111827;
+    border-radius: 50%;
+    border: 1px solid #1f2937;
+    position: relative;
+}
+
+.notch-camera::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 3px;
+    height: 3px;
+    background: #3b82f6;
+    border-radius: 50%;
+    opacity: 0.6;
+}
+
+.notch-sensor {
+    width: 6px;
+    height: 6px;
+    background: #111827;
+    border-radius: 50%;
+}
+
+/* Optional Lock Screen Clock & Status Overlay */
+.lockscreen-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 14px 18px;
+    box-sizing: border-box;
+    transition: opacity 0.3s ease;
+}
+
+.lockscreen-overlay.hidden-overlay {
+    display: none !important;
+}
+
+.status-bar-preview {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 0 8px;
+    opacity: 0.85;
+}
+
+.clock-preview {
+    margin-top: 38px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #ffffff;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.clock-time {
+    font-size: 64px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -2px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.clock-date {
+    font-size: 13px;
+    font-weight: 500;
+    margin-top: 4px;
+    letter-spacing: 0.5px;
+    opacity: 0.9;
+}
+
+/* --- WALLPAPER CAPTURE AREA (EXPORT ROOT) --- */
+#wallpaper-area {
+    width: 360px;
+    height: 804px;
+    border-radius: 36px;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    z-index: 1;
+    transition: background 0.4s ease;
+    background: linear-gradient(145deg, #0f172a 0%, #020617 100%);
+    box-sizing: border-box;
+}
+
+#wallpaper-area.is-draggable {
+    cursor: grab;
+}
+
+#wallpaper-area.is-dragging {
+    cursor: grabbing;
+}
+
+/* ==========================================================================
+   EXPANDED WALLPAPER THEMES (14 Aesthetic & Glassmorphic Presets)
+   ========================================================================== */
+
+/* 1. Obsidian (Original Classic) */
+#wallpaper-area.theme-obsidian {
+    background: radial-gradient(ellipse at 50% 28%, #141f36 0%, #0c1426 45%, #020617 100%);
+}
+
+#wallpaper-area.theme-obsidian .day-dot {
+    background: #38bdf8;
+    box-shadow: 0 0 8px #38bdf8;
+}
+
+/* 2. Aurora (Teal & Emerald) */
+#wallpaper-area.theme-aurora {
+    background: linear-gradient(145deg, #042f2e 0%, #031e1c 50%, #020617 100%);
+}
+
+#wallpaper-area.theme-aurora .day-dot {
+    background: #34d399;
+    box-shadow: 0 0 8px #34d399;
+}
+
+#wallpaper-area.theme-aurora .class-time {
+    color: #a7f3d0;
+}
+
+/* 3. Nebula (Cosmic Violet) */
+#wallpaper-area.theme-violet {
+    background: linear-gradient(145deg, #2e1065 0%, #0f172a 55%, #020617 100%);
+}
+
+#wallpaper-area.theme-violet .day-dot {
+    background: #c084fc;
+    box-shadow: 0 0 8px #c084fc;
+}
+
+/* 4. Sapphire (Midnight Blue) */
+#wallpaper-area.theme-sapphire {
+    background: linear-gradient(145deg, #1e1b4b 0%, #0c1a30 55%, #020617 100%);
+}
+
+#wallpaper-area.theme-sapphire .day-dot {
+    background: #60a5fa;
+    box-shadow: 0 0 8px #60a5fa;
+}
+
+/* 5. Sunset (Crimson Dusk) */
+#wallpaper-area.theme-sunset {
+    background: linear-gradient(145deg, #4c0519 0%, #1e1b4b 60%, #020617 100%);
+}
+
+#wallpaper-area.theme-sunset .day-dot {
+    background: #fb7185;
+    box-shadow: 0 0 8px #fb7185;
+}
+
+/* 6. Cyberpunk (Neon Synth) */
+#wallpaper-area.theme-cyberpunk {
+    background: linear-gradient(145deg, #180a2a 0%, #0a192f 50%, #030712 100%);
+}
+
+#wallpaper-area.theme-cyberpunk .day-dot {
+    background: #22d3ee;
+    box-shadow: 0 0 8px #22d3ee;
+}
+
+/* 7. Crystal Frost (Ultra Pure Glass) */
+#wallpaper-area.theme-frosted-crystal {
+    background: radial-gradient(circle at 50% 15%, #1e293b 0%, #0b1322 60%, #020617 100%);
+}
+
+#wallpaper-area.theme-frosted-crystal .day-dot {
+    background: #f8fafc;
+    box-shadow: 0 0 10px #ffffff;
+}
+
+#wallpaper-area.theme-frosted-crystal .day-card {
+    border-color: rgba(255, 255, 255, 0.22);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+}
+
+/* 8. Liquid Titanium (Metallic Specular) */
+#wallpaper-area.theme-liquid-titanium {
+    background: linear-gradient(145deg, #1f2937 0%, #111827 50%, #030712 100%);
+}
+
+#wallpaper-area.theme-liquid-titanium .day-dot {
+    background: #cbd5e1;
+    box-shadow: 0 0 8px #e2e8f0;
+}
+
+#wallpaper-area.theme-liquid-titanium .day-card {
+    border-top: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+/* 9. Rose Quartz & Gold */
+#wallpaper-area.theme-rose-gold {
+    background: linear-gradient(145deg, #3b0724 0%, #190312 50%, #020617 100%);
+}
+
+#wallpaper-area.theme-rose-gold .day-dot {
+    background: #f472b6;
+    box-shadow: 0 0 8px #f472b6;
+}
+
+/* 10. Imperial Jade */
+#wallpaper-area.theme-emerald-matrix {
+    background: linear-gradient(145deg, #022c22 0%, #064e3b 40%, #021a14 100%);
+}
+
+#wallpaper-area.theme-emerald-matrix .day-dot {
+    background: #10b981;
+    box-shadow: 0 0 8px #10b981;
+}
+
+/* 11. Holo Prism (Iridescent Pastel) */
+#wallpaper-area.theme-holographic {
+    background: linear-gradient(145deg, #1e1b4b 0%, #172554 45%, #0f172a 100%);
+}
+
+#wallpaper-area.theme-holographic .day-dot {
+    background: #38bdf8;
+    box-shadow: 0 0 8px #ec4899;
+}
+
+/* 12. Tokyo Neon (Electric Indigo & Magenta) */
+#wallpaper-area.theme-tokyo-midnight {
+    background: linear-gradient(145deg, #2e0854 0%, #11052c 60%, #03010b 100%);
+}
+
+#wallpaper-area.theme-tokyo-midnight .day-dot {
+    background: #f43f5e;
+    box-shadow: 0 0 10px #f43f5e;
+}
+
+/* 13. Golden Amber */
+#wallpaper-area.theme-golden-hour {
+    background: linear-gradient(145deg, #451a03 0%, #1c0a00 50%, #020617 100%);
+}
+
+#wallpaper-area.theme-golden-hour .day-dot {
+    background: #f59e0b;
+    box-shadow: 0 0 8px #f59e0b;
+}
+
+/* 14. Nordic Mist */
+#wallpaper-area.theme-nordic-mist {
+    background: linear-gradient(145deg, #1e293b 0%, #0f172a 65%, #020617 100%);
+}
+
+#wallpaper-area.theme-nordic-mist .day-dot {
+    background: #7dd3fc;
+    box-shadow: 0 0 8px #7dd3fc;
+}
+
+/* ==========================================================================
+   CUSTOM PHOTO BACKGROUND WITH SCALE, POSITION, & BLUR
+   ========================================================================== */
+
+.wallpaper-photo-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 0;
+    display: none;
+    pointer-events: none;
+}
+
+.wallpaper-bg-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform-origin: center center;
+    transition: filter 0.2s ease;
+    will-change: transform, filter;
+}
+
+.wallpaper-bg-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(2, 6, 23, 0.65);
+    z-index: 1;
+    display: none;
+    transition: background 0.2s ease;
+    pointer-events: none;
+}
+
+/* --- Wallpaper Header --- */
+.schedule-header {
+    padding-top: 190px;
+    /* Safe space reserved for mobile lock screen clock */
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 14px;
+    z-index: 2;
+    position: relative;
+    pointer-events: none;
+    text-align: center;
+}
+
+.header-class {
+    font-family: 'Cinzel', serif;
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: 12px;
+    color: #ffffff;
+    margin-left: 8px;
+    /* balances letter-spacing to nest 'C' perfectly inside script loop */
+    margin-bottom: -27px;
+    /* loops the top of cursive 'S' around C and L */
+    z-index: 2;
+    position: relative;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    line-height: 1;
+}
+
+.header-schedule {
+    font-family: 'Great Vibes', cursive;
+    font-size: 84px;
+    color: #ffffff;
+    opacity: 1;
+    line-height: 1;
+    height: 80px;
+    /* Fixed height so html2canvas computes the exact vertical bounding box */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+    position: relative;
+    margin-bottom: 34px;
+    /* Clears the cursive descender loop with clean breathing space */
+    text-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), 0 0 30px rgba(255, 255, 255, 0.15);
+}
+
+.header-semester {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 7px;
+    font-weight: 700;
+    letter-spacing: 6px;
+    color: #94a3b8;
+    margin-top: 0;
+    margin-left: 6px;
+    /* balances letter-spacing to center properly */
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    z-index: 4;
+    position: relative;
+    line-height: 1.2;
+    white-space: nowrap;
+}
+
+/* --- Content Body --- */
+.content-body {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 0 4px 30px 4px;
+    z-index: 2;
+    overflow: hidden;
+    width: 100%;
+    box-sizing: border-box;
+    position: relative;
+    pointer-events: auto;
+}
+
+.cards-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    height: max-content;
+    flex-shrink: 0;
+    transform-origin: top center;
+    transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* Glassmorphism Day Card with Dynamic Sliders */
+.day-card {
+    background: rgba(14, 21, 38, var(--card-opacity, 0.65));
+    backdrop-filter: blur(var(--card-blur, 24px));
+    -webkit-backdrop-filter: blur(var(--card-blur, 24px));
+    border: 1px solid var(--card-border-color, rgba(255, 255, 255, 0.08));
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 18px;
+    padding: 10px 14px;
+    box-shadow: var(--card-box-shadow, 0 8px 24px rgba(0, 0, 0, 0.35));
+    width: calc(100% - 24px);
+    max-width: 336px;
+    display: none;
+    transition: all 0.25s ease;
+}
+
+/* Card Glow Accent Presets */
+.day-card.glow-cyan {
+    border-color: rgba(56, 189, 248, 0.35);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), 0 0 15px rgba(56, 189, 248, 0.2);
+}
+
+.day-card.glow-violet {
+    border-color: rgba(192, 132, 252, 0.35);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), 0 0 15px rgba(192, 132, 252, 0.2);
+}
+
+.day-card.glow-emerald {
+    border-color: rgba(52, 211, 153, 0.35);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), 0 0 15px rgba(52, 211, 153, 0.2);
+}
+
+.day-card.glow-rose {
+    border-color: rgba(251, 113, 133, 0.35);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), 0 0 15px rgba(251, 113, 133, 0.2);
+}
+
+.day-card.glow-gold {
+    border-color: rgba(245, 158, 11, 0.35);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35), 0 0 15px rgba(245, 158, 11, 0.2);
+}
+
+.day-card.glow-crystal {
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.day-title {
+    font-size: 11px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: #7d8fa6;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    padding-bottom: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.day-dot {
+    display: none !important;
+}
+
+.class-row {
+    display: grid;
+    grid-template-columns: minmax(65px, auto) 1fr minmax(55px, auto);
+    align-items: center;
+    padding: 5px 2px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    gap: 10px;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.class-row:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.class-row:last-child {
+    border-bottom: none;
+}
+
+.class-time {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 9px;
+    font-weight: 600;
+    color: #cbd5e1;
+    background: rgba(4, 9, 20, 0.65);
+    padding: 0 7px;
+    border-radius: 6px;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.04);
+    white-space: nowrap;
+    letter-spacing: 0.5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    height: 18px;
+    box-sizing: border-box;
+}
+
+.class-subject {
+    font-weight: 700;
+    font-size: 10px;
+    color: #ffffff;
+    white-space: normal;
+    word-break: break-word;
+    line-height: 1.3;
+    letter-spacing: 0.3px;
+}
+
+.class-room {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+    font-size: 9px;
+    color: #64748b;
+    text-align: right;
+    white-space: normal;
+    word-break: break-word;
+    line-height: 1.3;
+    background: none;
+    padding: 0;
+    border: none;
+}
+
+/* Compact Mode (when 4+ subjects are in a day) */
+.compact-mode {
+    padding: 6px 8px;
+    border-radius: 12px;
+    gap: 4px;
+}
+
+.compact-mode .day-title {
+    font-size: 9.5px;
+    margin-bottom: 3px;
+    padding-bottom: 2px;
+}
+
+.compact-mode .class-row {
+    padding: 3px 4px;
+    grid-template-columns: minmax(62px, auto) 1fr minmax(48px, auto);
+    gap: 6px;
+}
+
+.compact-mode .class-time {
+    font-size: 8px;
+    padding: 0 5px;
+    height: 16px;
+}
+
+.compact-mode .class-subject {
+    font-size: 8.8px;
+}
+
+.compact-mode .class-room {
+    font-size: 8px;
+    padding: 1px 4px;
+}
