@@ -1,0 +1,34 @@
+{
+  "name": "schedule-maker",
+  "version": "1.0.0",
+  "description": "Elegant, high-definition 1080x2412 mobile phone lock screen wallpaper generator designed for students.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rebiscoooooo/schedule-maker.git"
+  },
+  "keywords": [
+    "react",
+    "schedule",
+    "wallpaper",
+    "lockscreen",
+    "glassmorphism"
+  ],
+  "author": "Jay-ar S. De Guzman",
+  "license": "ISC",
+  "dependencies": {
+    "canvas-confetti": "^1.9.4",
+    "html2canvas": "^1.4.1",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.2.1",
+    "vite": "^8.3.6"
+  }
+}
